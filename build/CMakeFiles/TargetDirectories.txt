@@ -1,0 +1,8 @@
+C:/Users/mokel/Programming/C/SDLTest/build/CMakeFiles/SDLTest.dir
+C:/Users/mokel/Programming/C/SDLTest/build/CMakeFiles/edit_cache.dir
+C:/Users/mokel/Programming/C/SDLTest/build/CMakeFiles/rebuild_cache.dir
+C:/Users/mokel/Programming/C/SDLTest/build/vendored/SDL/CMakeFiles/SDL3-shared.dir
+C:/Users/mokel/Programming/C/SDLTest/build/vendored/SDL/CMakeFiles/SDL3_test.dir
+C:/Users/mokel/Programming/C/SDLTest/build/vendored/SDL/CMakeFiles/SDL_uclibc.dir
+C:/Users/mokel/Programming/C/SDLTest/build/vendored/SDL/CMakeFiles/edit_cache.dir
+C:/Users/mokel/Programming/C/SDLTest/build/vendored/SDL/CMakeFiles/rebuild_cache.dir
