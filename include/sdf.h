@@ -18,4 +18,4 @@ typedef struct {
 
 SDFObject *create_circle(Vec2 center, float radius);
 float sdf_circle(SDFObject *obj,Vec2 point);
-
+void sdf_object_free(SDFObject *obj);

@@ -25,3 +25,15 @@ SDFObject *create_circle(Vec2 center, float radius)
 
     return obj;
 }
+void sdf_object_free(SDFObject *obj) {
+    if (!obj) return;
+
+    // Free the shape-specific data if it exists
+    if (obj->data) {
+        free(obj->data);
+        obj->data = NULL;
+    }
+
+    // Free the SDFObject itself
+    free(obj);
+}
