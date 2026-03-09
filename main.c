@@ -38,6 +38,35 @@ static inline float clamp_float(float value, float min, float max) {
   return value;
 }
 
+void simulate_drop_gravity(DynamicFillArray *array, float delta_time) {
+  if (!array)
+    return;
+
+  for (int i = 0; i < array->object_count; i++) {
+    SDFObject *obj_a = array->objects[i];
+    if (!obj_a)
+      continue;
+
+    if (obj_a->type == SDF_TYPE_CIRCLE) {
+      Circle *obj_a_data = (Circle *)obj_a->data;
+      Vec2 vel =  (Vec2){0.0, 5.0 * delta_time * obj_a_data->radius};
+      obj_a_data->center = vec2_add(obj_a_data->center,vel);
+      obj_a_data->drop_dist = vec2_add(obj_a_data->drop_dist, vel);
+      if (vec2_length(obj_a_data->drop_dist) >= obj_a_data->radius+K*0.9 && obj_a_data->radius >= 4.0){ // Fix Spawn Distance
+        SDFObject *new_drop = create_circle(vec2_sub(obj_a_data->center, obj_a_data->drop_dist),2.0); // Fix radius Selection
+        if (new_drop != NULL) {
+          dynamic_fill_array_insert(array, new_drop);
+          obj_a_data->radius -= 2.0;
+          obj_a_data->drop_dist = (Vec2){0.0,0.0};
+        }
+      }
+
+      if (obj_a_data->center.y > HEIGHT + obj_a_data->radius * 1.5) {
+        dynamic_fill_array_remove_index(array, i); // safe removal
+      }
+    }
+  }
+}
 void simulate_drop(DynamicFillArray *array, float delta_time) {
   if (!array)
     return;
@@ -150,7 +179,7 @@ int main(void) {
       if (e.type == SDL_EVENT_MOUSE_WHEEL)
         mouse_scroll = e.wheel.y;
       if (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
-        SDFObject *new_drop = create_circle(mouse_pos,new_drop_size);
+        SDFObject *new_drop = create_circle(mouse_pos, new_drop_size);
         if (new_drop != NULL) {
           dynamic_fill_array_insert(&drop_array, new_drop);
         }
@@ -165,6 +194,7 @@ int main(void) {
     SDL_GetMouseState(&mouse_pos.x, &mouse_pos.y);
 
     simulate_drop(&drop_array, delta_time);
+    simulate_drop_gravity(&drop_array, delta_time);
     new_drop_size += mouse_scroll;
 
     /* draw pixels */

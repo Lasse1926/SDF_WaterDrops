@@ -12,6 +12,7 @@ SDFObject *create_circle(Vec2 center, float radius)
     if (!c) return NULL;
     c->center = center;
     c->radius = radius;
+    c->drop_dist = (Vec2){0.0,0.0};
 
     SDFObject *obj = malloc(sizeof(SDFObject));
     if (!obj) {

@@ -14,6 +14,7 @@ typedef struct SDFObject {
 typedef struct {
   Vec2 center;
   float radius;
+  Vec2 drop_dist;
 } Circle;
 
 SDFObject *create_circle(Vec2 center, float radius);
