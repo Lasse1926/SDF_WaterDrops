@@ -39,7 +39,6 @@ static inline float clamp_float(float value, float min, float max) {
 }
 
 void simulate_drop(DynamicFillArray *array, float delta_time) {
-  printf("%f\n",delta_time);
   if (!array)
     return;
 
@@ -65,8 +64,13 @@ void simulate_drop(DynamicFillArray *array, float delta_time) {
             vec2_normalize(vec2_sub(obj_b_data->center, obj_a_data->center));
 
         if (dist_between_surfaces <= 0.0f) {
-          Vec2 vel = vec2_scale(dir_from_a_to_b,
-                                -6.0f * dist_between_surfaces * delta_time);
+          float penetration = -dist_between_surfaces;
+
+          float step = 6.0f * penetration * delta_time;
+          step = fminf(step, obj_b_data->radius * 0.25f);
+
+          Vec2 vel = vec2_scale(dir_from_a_to_b, step);
+
           if (obj_a_data->radius >= obj_b_data->radius) {
             obj_b_data->center = vec2_sub(obj_b_data->center, vel);
           } else {
