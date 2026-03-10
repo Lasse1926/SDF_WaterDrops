@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "boolen_functions.h"
 #include "dynamic_fill_array.h"
@@ -49,15 +50,35 @@ void simulate_drop_gravity(DynamicFillArray *array, float delta_time) {
 
     if (obj_a->type == SDF_TYPE_CIRCLE) {
       Circle *obj_a_data = (Circle *)obj_a->data;
-      Vec2 vel =  (Vec2){0.0, 5.0 * delta_time * obj_a_data->radius};
-      obj_a_data->center = vec2_add(obj_a_data->center,vel);
+
+      // Parameters
+      float min_radius_to_fall = 4.5f; // drops smaller than this won't fall
+      float base_speed = 2.0f;         // base falling speed
+      float speed_factor = 0.1f;       // extra speed per unit radius
+      float max_speed = 20.0f;          // cap max speed
+
+      Vec2 vel = {0.0f, 0.0f}; // default no movement
+
+      if (obj_a_data->radius >= min_radius_to_fall) {
+        float speed = base_speed + obj_a_data->radius * speed_factor;
+        if (speed > max_speed)
+          speed = max_speed;
+        vel.y = speed * delta_time;
+      }
+
+      obj_a_data->center = vec2_add(obj_a_data->center, vel);
       obj_a_data->drop_dist = vec2_add(obj_a_data->drop_dist, vel);
-      if (vec2_length(obj_a_data->drop_dist) >= obj_a_data->radius+K*0.9 && obj_a_data->radius >= 4.0){ // Fix Spawn Distance
-        SDFObject *new_drop = create_circle(vec2_sub(obj_a_data->center, obj_a_data->drop_dist),2.0); // Fix radius Selection
+      if (vec2_length(obj_a_data->drop_dist) >= obj_a_data->radius * 2.0 + K &&
+          obj_a_data->radius >= 8.0) { // Fix Spawn Distance
+        Vec2 drop_location = vec2_scale(obj_a_data->drop_dist, 0.5);
+        float fraction = 0.05f + 0.05f * ((float)rand() / RAND_MAX); // 5%–10% of original radius
+        SDFObject *new_drop =
+            create_circle(vec2_sub(obj_a_data->center, drop_location),
+                          obj_a_data->radius * fraction);
         if (new_drop != NULL) {
           dynamic_fill_array_insert(array, new_drop);
-          obj_a_data->radius -= 2.0;
-          obj_a_data->drop_dist = (Vec2){0.0,0.0};
+          obj_a_data->radius *= 1.0 - fraction;
+          obj_a_data->drop_dist = (Vec2){0.0, 0.0};
         }
       }
 
